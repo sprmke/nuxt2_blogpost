@@ -3,7 +3,9 @@ import Vuex from 'vuex';
 const createStore = () => {
   return new Vuex.Store({
     state: {
-      loadedPosts: []
+      loadedPosts: [],
+      token: null,
+      authStatus: ''
     },
     mutations: {
       setPosts(state, posts) {
@@ -17,6 +19,12 @@ const createStore = () => {
           return post.id === editedPost.id;
         });
         state.loadedPosts[postIndex] = editedPost;
+      },
+      setToken(state, token) {
+        state.token = token;
+      },
+      setAuthStatus(state, authStatus) {
+        state.authStatus = authStatus;
       }
     },
     actions: {
@@ -52,11 +60,70 @@ const createStore = () => {
           commit('editPost', finalEditedPost);
         })
         .catch(err => console.log(err));
-      } 
+      },
+      authenticateUser({commit}, authData) {
+        // reset invalid message
+        commit('setAuthStatus', {
+          message: '',
+          status: null
+        });
+
+        // set endpoint if signup or signin
+        let authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser';
+        if (authData.isLogin) {
+          authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword';
+        }
+
+        // submit auth API
+        return this.$axios.$post(`${authURL}?key=${process.env.rvAPIKey}`, {
+            email: authData.email,
+            password: authData.password,
+            returnSecureToken: true
+          })
+          .then(data => {
+            console.log('Auth data::', data);
+
+            // show success message
+            if (!authData.isLogin) {
+              commit('setAuthStatus', {
+                message: 'Successfully registered',
+                status: 'success'
+              });
+            }
+
+            // save token
+            commit('setToken', data.idToken);
+
+            // return true for success response
+            return true;
+            
+          }).catch(err => {
+            console.log('Auth err::', err);
+
+            // show invalid message
+            if (authData.isLogin) {
+              commit('setAuthStatus', {
+                message: 'Invalid email or password',
+                status: 'failed'
+              });
+            } else {
+              commit('setAuthStatus', {
+                message: 'Email is already exist',
+                status: 'failed'
+              });
+            }
+
+            // return true for success response
+            return false;
+          });
+      }
     },
     getters: {
       getPosts(state) {
         return state.loadedPosts;
+      },
+      getAuthStatus(state) {
+        return state.authStatus;
       }
     }
   });

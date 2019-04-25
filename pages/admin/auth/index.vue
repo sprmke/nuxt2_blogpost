@@ -10,7 +10,7 @@
           btn-style="inverted"
           style="margin-left: 10px"
           @click="isLogin = !isLogin">Switch to {{ isLogin ? 'Signup' : 'Login' }}</AppButton>
-          <p v-if="authInvalidMessage !== ''" class="error-message">{{authInvalidMessage}}</p>
+          <p v-if="authStatus.status !== null" :class="authStatus.status">{{authStatus.message}}</p>
       </form>
     </div>
   </div>
@@ -25,33 +25,27 @@ export default {
     return {
       isLogin: true,
       email: '',
-      password: '',
-      authInvalidMessage: ''
+      password: ''
+    }
+  },
+  computed: {
+    authStatus() {
+      return this.$store.getters.getAuthStatus;
     }
   },
   methods: {
     onSubmit() {
-      // set endpoint if signup or signin
-      let authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser';
-      if (this.isLogin) {
-        authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword';
-      }
-
-      // submit auth API
-      this.$axios.$post(`${authURL}?key=${process.env.rvAPIKey}`, {
-          email: this.email,
-          password: this.password,
-          returnSecureToken: true
-        }).then(data => {
-          console.log('Auth data::', data);
-        }).catch(err => {
-          console.log('Auth err::', err);
-           if (this.isLogin) {
-             this.authInvalidMessage = 'Invalid email or password';
-           } else {
-             this.authInvalidMessage = 'Email is already exist';
-           }
-        });
+      this.$store.dispatch('authenticateUser', {
+        isLogin: this.isLogin,
+        email: this.email,
+        password: this.password
+      })
+      .then(isSuccessful => {
+        console.log('isSuccessful::', isSuccessful);
+        if (isSuccessful) {
+          this.$router.push('/admin')
+        }
+      });
     }
   }
 }
@@ -72,8 +66,11 @@ export default {
   box-sizing: border-box;
 }
 
-.error-message {
+.failed {
   color: red;
+}
+.success {
+  color: green;
 }
 </style>
 
