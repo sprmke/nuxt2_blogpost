@@ -48,8 +48,7 @@ module.exports = {
   ],
 
   axios: {
-    baseURL: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com',
-    credentials: false
+    baseURL: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com'
   },
 
   /*
@@ -63,7 +62,8 @@ module.exports = {
     }
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com'
+    baseUrl: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com',
+    rvAPIKey: process.env.RV_API_KEY
   },
   transition: {
     name: 'fade',
