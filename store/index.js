@@ -43,9 +43,9 @@ const createStore = () => {
       setPosts({commit}, posts) {
         commit('setPosts', posts);
       },
-      addPost({commit}, post) {
+      addPost({state, commit}, post) {
         let createdPost = Object.assign(post, { updatedDate: new Date() });
-        return this.$axios.$post(`/posts.json`, createdPost)
+        return this.$axios.$post(`/posts.json?auth=${state.token}`, createdPost)
           .then(data => {
             // merge createdPost with page params id
             const finalCreatedPost = Object.assign(createdPost, { id: data.name });
@@ -53,8 +53,8 @@ const createStore = () => {
           })
           .catch(err => console.log(err));
       },
-      editPost({commit}, editedPost) {
-        return this.$axios.$put(`/posts/${editedPost.id}.json`, editedPost)
+      editPost({state, commit}, editedPost) {
+        return this.$axios.$put(`/posts/${editedPost.id}.json?auth=${state.token}`, editedPost)
         .then(data => {
           const finalEditedPost = data;
           commit('editPost', finalEditedPost);
@@ -96,7 +96,7 @@ const createStore = () => {
 
             // return true for success response
             return true;
-            
+
           }).catch(err => {
             console.log('Auth err::', err);
 
