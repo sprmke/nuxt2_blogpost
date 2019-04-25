@@ -10,6 +10,7 @@
           btn-style="inverted"
           style="margin-left: 10px"
           @click="isLogin = !isLogin">Switch to {{ isLogin ? 'Signup' : 'Login' }}</AppButton>
+          <p v-if="authInvalidMessage !== ''" class="error-message">{{authInvalidMessage}}</p>
       </form>
     </div>
   </div>
@@ -24,21 +25,33 @@ export default {
     return {
       isLogin: true,
       email: '',
-      password: ''
+      password: '',
+      authInvalidMessage: ''
     }
   },
   methods: {
     onSubmit() {
-      console.log('process.env.RV_API_KEY::', process.env.rvAPIKey);
-      this.$axios.$post(`https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=${process.env.rvAPIKey}`, {
-        email: this.email,
-        password: this.password,
-        returnSecureToken: true
-      }).then(data => {
-        console.log('Auth data::', data);
-      }).catch(err => {
-        console.log('Auth err::', err);
-      });
+      // set endpoint if signup or signin
+      let authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser';
+      if (this.isLogin) {
+        authURL = 'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword';
+      }
+
+      // submit auth API
+      this.$axios.$post(`${authURL}?key=${process.env.rvAPIKey}`, {
+          email: this.email,
+          password: this.password,
+          returnSecureToken: true
+        }).then(data => {
+          console.log('Auth data::', data);
+        }).catch(err => {
+          console.log('Auth err::', err);
+           if (this.isLogin) {
+             this.authInvalidMessage = 'Invalid email or password';
+           } else {
+             this.authInvalidMessage = 'Email is already exist';
+           }
+        });
     }
   }
 }
@@ -57,6 +70,10 @@ export default {
   margin: auto;
   padding: 10px;
   box-sizing: border-box;
+}
+
+.error-message {
+  color: red;
 }
 </style>
 
