@@ -6,8 +6,7 @@
 
 <script>
   export default {
-    name: 'AdminLayout',
-    middleware: 'auth'
+    name: 'AuthLayout'
   }
 </script>
 

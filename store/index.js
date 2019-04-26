@@ -124,6 +124,9 @@ const createStore = () => {
       },
       getAuthStatus(state) {
         return state.authStatus;
+      },
+      isAuthenticated(state) {
+        return state.token !== null;
       }
     }
   });

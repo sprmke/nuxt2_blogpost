@@ -12,10 +12,10 @@
 
   export default {
     name: 'NewPostPage',
+    layout: 'admin',
     head: {
       title: 'Add new post'
     },
-    layout: 'admin',
     components: {
       AdminPostForm
     },
