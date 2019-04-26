@@ -20,11 +20,14 @@ const createStore = () => {
         });
         state.loadedPosts[postIndex] = editedPost;
       },
+      setAuthStatus(state, authStatus) {
+        state.authStatus = authStatus;
+      },
       setToken(state, token) {
         state.token = token;
       },
-      setAuthStatus(state, authStatus) {
-        state.authStatus = authStatus;
+      clearToken(state) {
+        state.token = null;
       }
     },
     actions: {
@@ -61,7 +64,7 @@ const createStore = () => {
         })
         .catch(err => console.log(err));
       },
-      authenticateUser({commit}, authData) {
+      authenticateUser({commit, dispatch}, authData) {
         // reset invalid message
         commit('setAuthStatus', {
           message: '',
@@ -94,6 +97,9 @@ const createStore = () => {
             // save token
             commit('setToken', data.idToken);
 
+            // clear token after data expires date
+            dispatch('setLogoutTimer', data.expiresIn * 1000);
+
             // return true for success response
             return true;
 
@@ -116,6 +122,11 @@ const createStore = () => {
             // return true for success response
             return false;
           });
+      },
+      setLogoutTimer({commit}, duration) {
+        setTimeout(() => {
+          commit('clearToken');
+        }, duration);
       }
     },
     getters: {
