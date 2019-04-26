@@ -6,7 +6,7 @@
 
 <script>
   export default {
-    middleware: 'log',
+    // middleware: 'log',
     computed: {
       loadedPosts() {
         // get loadedPosts from the store

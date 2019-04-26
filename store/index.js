@@ -97,7 +97,11 @@ const createStore = () => {
             // save token
             commit('setToken', data.idToken);
 
-            // clear token after data expires date
+            // save token and expires date to local storage
+            localStorage.setItem('token', data.idToken);
+            localStorage.setItem('tokenExpires', new Date().getTime() + data.expiresIn * 1000);
+
+            // clear token after res data expires date
             dispatch('setLogoutTimer', data.expiresIn * 1000);
 
             // return true for success response
@@ -127,6 +131,21 @@ const createStore = () => {
         setTimeout(() => {
           commit('clearToken');
         }, duration);
+      },
+      initAuth({commit, dispatch}) {
+        const token = localStorage.getItem('token');
+        const expirationDate = localStorage.getItem('tokenExpires');
+        
+        // do nothing if token is null or expired
+        if (new Date().getTime() > +expirationDate || !token) {
+          return;
+        }
+
+        // set expires date minus the current date timestamp
+        dispatch('setLogoutTimer', +expirationDate - new Date().getTime());
+
+        // set token
+        commit('setToken', token);
       }
     },
     getters: {

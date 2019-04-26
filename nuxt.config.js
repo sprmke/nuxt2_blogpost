@@ -70,6 +70,6 @@ module.exports = {
     mode: 'out-in'
   },
   router: {
-    middleware: 'log'
+    // middleware: 'log'
   }
 }
