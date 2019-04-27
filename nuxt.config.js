@@ -48,7 +48,7 @@ module.exports = {
   ],
 
   axios: {
-    baseURL: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com'
+    baseURL: process.env.BASE_URL || 'https://nuxt-blog-sprmke.firebaseio.com'
   },
 
   /*
@@ -62,8 +62,8 @@ module.exports = {
     }
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://nuxt-blog-fa05a.firebaseio.com',
-    rvAPIKey: process.env.RV_API_KEY
+    baseUrl: process.env.BASE_URL || 'https://nuxt-blog-sprmke.firebaseio.com',
+    nbAPIKey: process.env.NB_API_KEY
   },
   transition: {
     name: 'fade',
