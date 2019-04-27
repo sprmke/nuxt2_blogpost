@@ -101,7 +101,7 @@ const createStore = () => {
 
             const token = data.idToken;
             const tokenExpires =  data.expiresIn * 1000;
-            const tokenExpirationDate = new Date().getTime() + tokenExpires;
+            const tokenExpirationDate = new Date().getTime() + Number.parseInt(tokenExpires);
             
             // save token and expires date to local storage
             localStorage.setItem('token', token);
@@ -110,9 +110,6 @@ const createStore = () => {
             // save token and expires date to cookie
             Cookie.set('token', token);
             Cookie.set('tokenExpirationDate', tokenExpirationDate)
-
-            // clear token after res data expires date
-            dispatch('setLogoutTimer', tokenExpires);
 
             // return true for success response
             return true;
@@ -136,11 +133,6 @@ const createStore = () => {
             // return true for success response
             return false;
           });
-      },
-      setLogoutTimer({commit}, duration) {
-        setTimeout(() => {
-          commit('clearToken');
-        }, duration);
       },
       initAuth({commit, dispatch}, req) {
         let token;
@@ -170,18 +162,17 @@ const createStore = () => {
         else {
           token = localStorage.getItem('token');
           tokenExpirationDate = localStorage.getItem('tokenExpirationDate');
-        
-          // do nothing if token is null or expired
-          if (new Date().getTime() > +tokenExpirationDate || !token) {
-            return;
-          }
         }
 
-        if (token && tokenExpirationDate) {
-          // set expires date minus the current date timestamp
-          dispatch('setLogoutTimer', +tokenExpirationDate - new Date().getTime());
-  
-          // set token
+        // clear token if it is null or expired
+        if (new Date().getTime() > +tokenExpirationDate || !token) {
+          console.log('Empty or invalid or expired token');
+          commit('clearToken');
+          return;
+        }
+
+        // set token
+        if (token) {
           commit('setToken', token);
         }
       }
