@@ -164,16 +164,30 @@ const createStore = () => {
           tokenExpirationDate = localStorage.getItem('tokenExpirationDate');
         }
 
-        // clear token if it is null or expired
+        // call logout action if token is null or expired
         if (new Date().getTime() > +tokenExpirationDate || !token) {
           console.log('Empty or invalid or expired token');
-          commit('clearToken');
+          dispatch('logout');
           return;
         }
 
         // set token
         if (token) {
           commit('setToken', token);
+        }
+      },
+      logout({commit}) {
+        // clear token & tokenExpirationDate
+        // on vuex store, localStorage and session cookie
+        commit('clearToken');
+
+        Cookie.remove('token');
+        Cookie.remove('tokenExpirationDate');
+
+        // clear local storage on client only
+        if (process.client) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('tokenExpirationDate');
         }
       }
     },
