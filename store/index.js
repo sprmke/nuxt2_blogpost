@@ -165,7 +165,7 @@ const createStore = () => {
           }
         }
         // load from client
-        else {
+        else if (process.client) {
           token = localStorage.getItem('token');
           tokenExpirationDate = localStorage.getItem('tokenExpirationDate');
         }
