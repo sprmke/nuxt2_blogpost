@@ -79,11 +79,18 @@ module.exports = {
   ],
   generate: {
     routes: function() {
+      // prerender our dynamic posts pages
+      // when deploying our app as static website
       return axios.get('https://nuxt-blog-sprmke.firebaseio.com/posts.json')
         .then(res => {
           const routes = [];
           for (const key in res.data) {
-            routes.push(`/posts/${key}`)
+            // pass the route and payload to prevent redudant request
+            // on posts/:id component
+            routes.push({
+              route: `/posts/${key}`,
+              payload: { postData: res.data[key]} 
+            });
           }
           return routes;
         });

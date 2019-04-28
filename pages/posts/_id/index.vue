@@ -18,6 +18,15 @@
 
   export default {
     asyncData(context) {
+      // will execute upon generating our app
+      // as static website
+      if (context.payload) {
+        return {
+          loadedPost: context.payload.postData
+        }
+      }
+      
+      // fetch our loaded post
       return context.app.$axios.$get(`/posts/${context.params.id}.json`)
         .then(data => {
           console.log('loadedPost::', data);
