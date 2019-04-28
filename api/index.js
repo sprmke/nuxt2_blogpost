@@ -14,7 +14,6 @@ router.use((req, res, next) => {
 
 // tack analytics data
 router.post('/track-data', (req, res) => {
-  console.log('stored data::', req.data.body);
   res.status(200).json({message: 'Success!'});
 });
 

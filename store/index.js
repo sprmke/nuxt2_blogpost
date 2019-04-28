@@ -30,6 +30,9 @@ const createStore = () => {
       },
       clearToken(state) {
         state.token = null;
+      },
+      testServerMiddleware(state) {
+        return this.$axios.$post(`/api/track-data.json?auth=${state.token}`, { data: 'Authenticated!' });
       }
     },
     actions: {
@@ -66,7 +69,7 @@ const createStore = () => {
         })
         .catch(err => console.log(err));
       },
-      authenticateUser({commit, dispatch}, authData) {
+      authenticateUser({commit}, authData) {
         // reset invalid message
         commit('setAuthStatus', {
           message: '',
@@ -110,6 +113,9 @@ const createStore = () => {
             // save token and expires date to cookie
             Cookie.set('token', token);
             Cookie.set('tokenExpirationDate', tokenExpirationDate)
+
+            // test our server middleware
+            commit('testServerMiddleware');
 
             // return true for success response
             return true;
